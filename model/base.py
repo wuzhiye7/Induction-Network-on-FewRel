@@ -48,16 +48,16 @@ class Base:
         # embedding matrix
         with tf.name_scope("embedding"):
             if self.embed is not None:
-                self.word_embedding = tf.Variable(self.embed)
+                self.word_embedding = tf.Variable(self.embed, trainable=False)
             else:
                 self.word_embedding = tf.get_variable(name="word_embedding", shape=[self.vocab_size, self.embed_size],
-                                                      initializer=self.initializer)
+                                                      initializer=self.initializer, trainable=True)
             self.pos1_embedding = tf.get_variable(name="pos1_embedding",
                                                   shape=[2 * self.sequence_length, self.pos_embedding_dim],
-                                                  initializer=self.initializer)
+                                                  initializer=self.initializer, trainable=True)
             self.pos2_embedding = tf.get_variable(name="pos2_embedding",
                                                   shape=[2 * self.sequence_length, self.pos_embedding_dim],
-                                                  initializer=self.initializer)
+                                                  initializer=self.initializer, trainable=True)
 
     def get_embedding(self):
         embedded_words = tf.nn.embedding_lookup(self.word_embedding, self.input_words)
@@ -79,10 +79,11 @@ class Base:
                                                         learning_rate=self.learning_rate, optimizer="Adam")
 
     def build_predict(self):
-        self.predict = tf.argmax(name="predictions", input=self.probs, axis=1)
+        self.predict_test = tf.argmax(name="predictions", input=self.probs, axis=1)
+        self.predict = tf.round(self.probs)
 
     def build_accuracy(self):
-        correct_prediction = tf.equal(tf.cast(self.predict, tf.int32), self.query_label)
+        correct_prediction = tf.equal(tf.cast(self.predict_test, tf.int32), self.query_label)
         self.accuracy = tf.reduce_mean(name="accuracy", input_tensor=tf.cast(correct_prediction, tf.float32))
 
     def build_summary(self):
