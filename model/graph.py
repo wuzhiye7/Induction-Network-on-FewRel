@@ -11,7 +11,7 @@ import numpy as np
 
 
 class InductionGraph(Base):
-    def __init__(self, N, K, Q, attention_size=80, **kwds):
+    def __init__(self, N, K, Q, **kwds):
         """       
         N: Num of classes for each batch
         K: Num of instances for each class in the support set
@@ -21,7 +21,6 @@ class InductionGraph(Base):
         self.num_classes = N
         self.support_num_per_class = K
         self.query_num_per_class = Q
-        self.attention_size = attention_size
 
         self.build()
 
