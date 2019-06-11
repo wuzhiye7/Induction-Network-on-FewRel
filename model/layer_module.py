@@ -29,18 +29,18 @@ def neural_tensor_layer(class_vector, query_encoder, out_size=100):
     return probs
 
 
-def self_attention(inputs, attention_size=100):
-    with tf.variable_scope('self_attention'):
-        _, sequence_length, hidden_size = inputs.shape
-        W_a1 = tf.get_variable("W_a1", [hidden_size, attention_size], dtype=tf.float32,
-                               initializer=tf.keras.initializers.glorot_normal())
-        W_a2 = tf.get_variable("W_a2", [attention_size], dtype=tf.float32,
-                               initializer=tf.keras.initializers.glorot_normal())
-
-        v = tf.tanh(tf.matmul(tf.reshape(inputs, [-1, hidden_size]), W_a1))
-        vu = tf.tensordot(v, W_a2, axes=1)
-        alphas = tf.nn.softmax(vu, name='alphas')
-        output = tf.reduce_sum(inputs * tf.reshape(alphas, [-1, sequence_length, 1]), 1)
+def self_attention(inputs):
+    _, sequence_length, hidden_size = inputs.shape
+    with tf.variable_scope('self_attn'):
+        x_proj = tf.layers.Dense(hidden_size)(inputs)
+        x_proj = tf.nn.tanh(x_proj)
+        u_w = tf.get_variable('W_a2', shape=[hidden_size, 1],
+                              dtype=tf.float32, initializer=tf.keras.initializers.glorot_normal())
+        x = tf.tensordot(x_proj, u_w, axes=1)
+        alphas = tf.nn.softmax(x, axis=1)
+        print("alphas shape", alphas.shape)
+        output = tf.matmul(tf.transpose(inputs, [0, 2, 1]), alphas)
+        output = tf.squeeze(output, -1)
         return output
 
 
