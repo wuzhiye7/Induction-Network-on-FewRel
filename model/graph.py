@@ -59,6 +59,7 @@ class InductionGraph(Base):
             labels_one_hot = tf.one_hot(self.query_label, self.num_classes, dtype=tf.float32)
             losses = tf.losses.mean_squared_error(labels=labels_one_hot, predictions=self.probs)
 
-            l2_losses = tf.add_n(
-                [tf.nn.l2_loss(v) for v in tf.trainable_variables() if 'bias' not in v.name]) * self.l2_lambda
-            self.loss = losses + l2_losses
+            # l2_losses = tf.add_n(
+            #     [tf.nn.l2_loss(v) for v in tf.trainable_variables() if 'bias' not in v.name]) * self.l2_lambda
+            # self.loss = losses + l2_losses
+            self.loss = losses
