@@ -178,5 +178,5 @@ class Base:
             print(
                 '[EVAL] step: {0:4} | accuracy: {1:3.2f}%'.format(it_val + 1,
                                                                   100 * iter_right_val / iter_sample_val) + '\r')
-            acc_val = iter_right_val / iter_sample_val
-            return acc_val
+        acc_val = iter_right_val / iter_sample_val
+        return acc_val
