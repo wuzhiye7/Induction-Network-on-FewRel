@@ -60,6 +60,7 @@ class Base:
                                                   initializer=self.initializer, trainable=True)
 
     def get_embedding(self):
+
         embedded_words = tf.nn.embedding_lookup(self.word_embedding, self.input_words)
         embedded_pos1 = tf.nn.embedding_lookup(self.pos1_embedding, self.input_pos1)
         embedded_pos2 = tf.nn.embedding_lookup(self.pos2_embedding, self.input_pos2)
@@ -112,6 +113,7 @@ class Base:
             not_best_count = 0  # Stop training after several epochs without improvement.
 
             print("training start ..")
+            print("word_embedding shape:", self.word_embedding.shape)
             iter_loss, iter_right, iter_sample = 0.0, 0.0, 0.0
             for it in range(curr_iter, curr_iter + train_iter):
                 inputs, query_label = train_data_loader.next_one_tf(self.num_classes,

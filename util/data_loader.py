@@ -47,6 +47,7 @@ class JSONFileDataLoader(FileDataLoader):
         self.data_pos2 = np.load(pos2_npy_file_name)
         self.data_mask = np.load(mask_npy_file_name)
         self.data_length = np.load(length_npy_file_name)
+        # dict: key: relation val:scope
         self.rel2scope = json.load(open(rel2scope_file_name))
         self.word_vec_mat = np.load(word_vec_mat_file_name)
         self.word2id = json.load(open(word2id_file_name))
@@ -111,6 +112,7 @@ class JSONFileDataLoader(FileDataLoader):
             if not case_sensitive:
                 print("Elimiating case sensitive problem...")
                 for relation in self.ori_data:
+                    # idx
                     for ins in self.ori_data[relation]:
                         for i in range(len(ins['tokens'])):
                             ins['tokens'][i] = ins['tokens'][i].lower()
@@ -124,7 +126,11 @@ class JSONFileDataLoader(FileDataLoader):
             self.word_vec_dim = len(self.ori_word_vec[0]['vec'])
             print("Got {} words of {} dims".format(self.word_vec_tot, self.word_vec_dim))
             print("Building word vector matrix and mapping...")
-            self.word_vec_mat = np.zeros((self.word_vec_tot, self.word_vec_dim), dtype=np.float32)
+
+            # 这里应该构建一个 (self.word_vec_tot+1, self.word_vec_dim) 啊？
+
+            #self.word_vec_mat = np.zeros((self.word_vec_tot, self.word_vec_dim), dtype=np.float32)
+            self.word_vec_mat = np.zeros((self.word_vec_tot+2, self.word_vec_dim), dtype=np.float32)
             for cur_id, word in enumerate(self.ori_word_vec):
                 w = word['word']
                 if not case_sensitive:
@@ -243,6 +249,7 @@ class JSONFileDataLoader(FileDataLoader):
         query_set['mask'] = np.concatenate(query_set['mask'], 0)
         query_label = np.array(query_label)
 
+        # shuffle
         perm = np.random.permutation(N * Q)
         query_set['word'] = query_set['word'][perm]
         query_set['pos1'] = query_set['pos1'][perm]
